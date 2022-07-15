@@ -44,9 +44,8 @@ resource "aws_subnet" "private_subnet" {
 }
 
 #Routing tables to route traffic for Public Subnet
-resource "aws_default_route_table" "public" {
-  #vpc_id = aws_vpc.vpc.id
-  default_route_table_id = aws_vpc.vpc.default_route_table_id
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.vpc.id
 
   tags = {
     Name        = "${var.environment}-public-route-table"
@@ -55,12 +54,12 @@ resource "aws_default_route_table" "public" {
 }
 
 resource "aws_route" "public_internet_gateway" {
-  route_table_id         = aws_default_route_table.public.id
+  route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.ig.id
 }
 
 resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_default_route_table.public.id
+  route_table_id = aws_route_table.public.id
 }
